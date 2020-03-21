@@ -2,7 +2,7 @@ var freqs;
 var currTask;
 var noteDuration;
 var maxNumVoices = 16;
-var partialNums = [2, 3, 4, 5, 6, 7, 8, 9];
+var JILimit = 9;
 
 function randomHarmonics(speed) {
     noteDuration = speed || noteDuration;
@@ -46,12 +46,13 @@ function addFreq() {
     var f;
     if (freqs.length) {
         var fundamental = gcdReduce(freqs);
+        var partialNum = randInt(1, JILimit + 1);
 
-        f = clampFreq(fundamental * randElement(partialNums));
+        f = clampFreq(fundamental * partialNum * 2**randInt(-4, 4));
         //if (fundamental < 10) post("ERROR!");
     } else {
         // if no pitches already exist, generate a random one 1024 <= n < 2048
-        f = randInt(128, 1024);
+        f = randInt(128, 2056);
     }
     // turn the note on for a certain amount of time then cancel it
     freqs.push(f);
@@ -67,9 +68,9 @@ function addFreq() {
 }
 
 // I know this function doesn't make any sense. 
-// But trust me, it transposes any freq to be between 128 and 1024 Hz
+// But trust me, it transposes any freq to be between 128 and 2056 Hz
 function clampFreq(n) {
-    return Math.pow(2, (Math.log(n) / Math.log(2) % 3) + 7);
+    return Math.pow(2, (Math.log(n) / Math.log(2) % 4) + 7);
 }
 
 // find gcd of an array
@@ -101,8 +102,4 @@ function randRange(lo, hi) {
 // generate a random integer LESS THAN max
 function randInt(min, max) {
     return Math.floor(Math.random() * Math.floor(max - min)) + min;
-}
-
-function randElement(arr) {
-    return arr[randInt(0, arr.length)];
 }

@@ -1,5 +1,20 @@
 var playButton = document.getElementById("play-button");
 var volumeControl = document.getElementById("volume");
+var limitSlider = document.getElementById("limit");
+var limitLabel = document.getElementById("limit-label");
+var bendSlider = document.getElementById("bend-slider");
+var bendLabel = document.getElementById("bend-label");
+var bendProbability = 0.2;
+
+bendSlider.addEventListener("input", () => {
+    bendProbability = parseInt(bendSlider.value) / 100;
+    bendLabel.innerText = `Pitch Bend Probability: ${bendSlider.value}%`;
+});
+
+limitSlider.addEventListener("input", () => {
+    JILimit = parseInt(limitSlider.value);
+    limitLabel.innerText = "JI Limit: " + limitSlider.value;
+});
 
 // ==== WebAudio Master Objects ====
 var audioContext
@@ -64,12 +79,11 @@ noteOn = function(f) {
 
         // fade in for 1 sec, random gain, 0.2 <= gain < 1.0
         var gain = 0.8 * Math.random() + 0.2;
-        gain = gain * (1.0 - (f - 128) / 2048); // linear lowpass "filter";
-        //console.log(gain);
+        gain = gain * (1.0 - ((f - 128) / 2500)); // linear lowpass "filter";
         line(oscGain.gain, 0, gain, 2);
 
-        if (Math.random() < 0.05) {
-            // 5% chance of random pitch bend -maxBend <= n < maxBend Hz over 10 sec
+        if (Math.random() < bendProbability) {
+            // small chance of random pitch bend -maxBend <= n < maxBend Hz over 10 sec
             var maxBend = 20;
             var bend = f + (Math.random() * 2 * maxBend) - maxBend;
             line(osc.frequency, f, bend, 10);
