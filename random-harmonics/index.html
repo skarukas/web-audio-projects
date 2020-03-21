@@ -34,7 +34,12 @@
             </ol>
             <p> Each tone generated lasts between 2 and 5 seconds, and the fundamental frequency will slowly evolve as certain notes appear and disappear. They'll have a slight (slow) pitch bend a certain percentage of the time, just for fun.</p>
             <em>*This is calculated quick and dirty, by finding an unreliable sort of GCD (greatest common divisor) of a set of floating-point numbers. The fundamental will occasionally be erroneously calculated as a low number (&lt 5 Hz) meaning the generated tones may be very close together and dissonant. Sorry :(</em>
+            <br/>
+            <div class="center" style="padding-top: 10px;">
+                <a href="https://github.com/skarukas" style="text-decoration: none; color:rgb(0, 162, 255)">github/skarukas</a>
+            </div>
         </div>
+        
         <script src="random-harmonics.js"></script>
         <script src="webaudio-playback.js"></script>
     </body>
