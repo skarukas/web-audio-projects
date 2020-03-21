@@ -25,9 +25,9 @@ var masterGainNode;
 function initAudio() {
     audioContext = new (window.AudioContext || window.webkitAudioContext);
     masterGainNode = audioContext.createGain();
-    masterGainNode.gain.value = volumeControl.value / maxNumVoices;
+    masterGainNode.gain.setValueAtTime(volumeControl.value / maxNumVoices, audioContext.currentTime);
     masterGainNode.connect(audioContext.destination); // connect to output
-    volumeControl.addEventListener("input", () => masterGainNode.gain.value = volumeControl.value / maxNumVoices);
+    volumeControl.addEventListener("input", () => masterGainNode.gain.setValueAtTime(volumeControl.value / maxNumVoices, audioContext.currentTime));
     audioOn = true;
 }
 
@@ -36,6 +36,7 @@ function initAudio() {
 
 function play() {
     audioOn || initAudio();
+    //makeNote(300, 4000);
     randomHarmonics(1000); // begin making some sound
     line(masterGainNode.gain, 0, volumeControl.value / 16, 1);
     playButton.innerText = "Stop";
@@ -75,12 +76,10 @@ noteOn = function(f) {
         osc.start();
 
         // force oscillator to stop after 10 seconds
-        osc.stop(audioContext.currentTime + 10);
-
         // fade in for 1 sec, random gain, 0.2 <= gain < 1.0
         var gain = 0.8 * Math.random() + 0.2;
         gain = gain * (1.0 - ((f - 128) / 2500)); // linear lowpass "filter";
-        line(oscGain.gain, 0, gain, 2);
+        line(oscGain.gain, 0.0, gain, 2);
 
         if (Math.random() < bendProbability) {
             // small chance of random pitch bend -maxBend <= n < maxBend Hz over 10 sec
@@ -96,11 +95,13 @@ noteOff = function(f) {
     var index = f.toFixed();
     if (oscList[index]) {
         var [osc, oscGain] = oscList[index];
+        oscGain.gain.setValueAtTime(oscGain.gain.value, audioContext.currentTime);
         // fade out for 1 sec then remove the oscillator
         line(oscGain.gain, null, 0, 2, () => {
             osc.stop();
             delete oscList[index];
         });
+        //setTimeout(()=> console.log(oscGain.gain.value), 2000);
     }
 }
 
@@ -109,14 +110,13 @@ noteOff = function(f) {
  * When finished, `callback` is executed.
  */
 function line(param, start, end, dur, callback) {
-    param.value = (start != null)? start : param.value;
+    param.setValueAtTime((start != null)? start : param.value, audioContext.currentTime);
     param.linearRampToValueAtTime(end, audioContext.currentTime + dur);
     callback && setTimeout(callback, dur * 1000);
 }
 
 
-/* 
-// ==== demo code for playing random frequencies in a certain range ====
+/* // ==== demo code for playing random frequencies in a certain range ====
 var container = document.createElement("div");
 container.innerHTML = '<span>Hi freq: </span><input type="range" min="400" max="800" step="1" value="420" id="hi">';
 document.querySelector(".controls").appendChild(container);
