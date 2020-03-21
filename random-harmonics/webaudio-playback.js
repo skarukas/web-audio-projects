@@ -1,6 +1,5 @@
 var playButton = document.getElementById("play-button");
 var volumeControl = document.getElementById("volume");
-volumeControl.addEventListener("input", () => masterGainNode.gain.value = volumeControl.value / maxNumVoices);
 
 // ==== WebAudio Master Objects ====
 var audioContext
@@ -13,6 +12,7 @@ function initAudio() {
     masterGainNode = audioContext.createGain();
     masterGainNode.gain.value = volumeControl.value / maxNumVoices;
     masterGainNode.connect(audioContext.destination); // connect to output
+    volumeControl.addEventListener("input", () => masterGainNode.gain.value = volumeControl.value / maxNumVoices);
     audioOn = true;
 }
 
@@ -24,12 +24,15 @@ function play() {
     randomHarmonics(1000); // begin making some sound
     line(masterGainNode.gain, 0, volumeControl.value / 16, 1);
     playButton.innerText = "Stop";
+    playButton.style.backgroundColor = "rgb(202, 12, 37)";
     playButton.onclick = stop;
 }
 function stop() {
     reset();
+    playButton.innerText = "Stopping...";
     line(masterGainNode.gain, null, 0, 1, () => {
         playButton.innerText = "Play";
+        playButton.style.backgroundColor = "rgb(12, 164, 202)";
         playButton.onclick = play;
     });
 }
@@ -56,16 +59,18 @@ noteOn = function(f) {
         osc.connect(oscGain);
         osc.start();
 
-        // force oscillator to stop after 8 seconds
-        setTimeout(() => osc.stop(),80000);
+        // force oscillator to stop after 10 seconds
+        osc.stop(audioContext.currentTime + 10);
 
         // fade in for 1 sec, random gain, 0.2 <= gain < 1.0
         var gain = 0.8 * Math.random() + 0.2;
+        gain = gain * (1.0 - (f - 128) / 2048); // linear lowpass "filter";
+        //console.log(gain);
         line(oscGain.gain, 0, gain, 2);
 
-        if (Math.random() < 0.2) {
-            // 20% chance of random pitch bend -maxBend <= n < maxBend Hz over 10 sec
-            var maxBend = 50;
+        if (Math.random() < 0.05) {
+            // 5% chance of random pitch bend -maxBend <= n < maxBend Hz over 10 sec
+            var maxBend = 20;
             var bend = f + (Math.random() * 2 * maxBend) - maxBend;
             line(osc.frequency, f, bend, 10);
         }

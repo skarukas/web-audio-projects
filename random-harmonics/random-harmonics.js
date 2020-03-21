@@ -2,6 +2,7 @@ var freqs;
 var currTask;
 var noteDuration;
 var maxNumVoices = 16;
+var partialNums = [2, 3, 4, 5, 6, 7, 8, 9];
 
 function randomHarmonics(speed) {
     noteDuration = speed || noteDuration;
@@ -45,13 +46,12 @@ function addFreq() {
     var f;
     if (freqs.length) {
         var fundamental = gcdReduce(freqs);
-        var partialNum = randInt(3, 14);
 
-        f = clampFreq(fundamental * partialNum);
+        f = clampFreq(fundamental * randElement(partialNums));
         //if (fundamental < 10) post("ERROR!");
     } else {
         // if no pitches already exist, generate a random one 1024 <= n < 2048
-        f = randInt(256, 1024);
+        f = randInt(128, 1024);
     }
     // turn the note on for a certain amount of time then cancel it
     freqs.push(f);
@@ -67,9 +67,9 @@ function addFreq() {
 }
 
 // I know this function doesn't make any sense. 
-// But trust me, it transposes any freq to be between 256 and 1024 Hz
+// But trust me, it transposes any freq to be between 128 and 1024 Hz
 function clampFreq(n) {
-    return Math.pow(2, (Math.log(n) / Math.log(2) % 2) + 8);
+    return Math.pow(2, (Math.log(n) / Math.log(2) % 3) + 7);
 }
 
 // find gcd of an array
@@ -81,7 +81,7 @@ function gcdReduce(arr) {
     return curr;
 }
 
-// gcd algorithm that kinda works floating point numbers
+// gcd algorithm that kinda works for floating point numbers
 function gcd(a, b) {
     var R;
     var e = 0.1;
@@ -101,4 +101,8 @@ function randRange(lo, hi) {
 // generate a random integer LESS THAN max
 function randInt(min, max) {
     return Math.floor(Math.random() * Math.floor(max - min)) + min;
+}
+
+function randElement(arr) {
+    return arr[randInt(0, arr.length)];
 }
