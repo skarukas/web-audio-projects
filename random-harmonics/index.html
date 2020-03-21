@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>End</title>
+    </head>
+    <body>
+        <h1>Random Spectral Music!</h1>
+        <div class="controls">
+            <div>
+                <button type="button" id="play-button" onclick="play()">Play</button>
+            </div>
+            <div>
+                <span>Volume: </span>
+                <input title="begin" type="range" min="0.0" max="1.0" step="0.01" value="0.5" id="volume">
+            </div>
+            <h2>How It Works</h2>
+            <ol>
+                <li>Every second, the fundamental frequency of all currently sounding frequencies is guessed.*</li>
+                <li>A random harmonic (3 &lt= <em>n</em> &lt 13) of this fundamental is generated. If there aren't any existing frequencies, a random frequency is generated instead.</li>
+                <li>This new frequency is normalized to the range of 256-1024 Hz using some weird math.</li>
+                <li>Repeat!</li>
+            </ol>
+            <p> Each tone generated lasts between 2 and 5 seconds, and the fundamental frequency will slowly evolve as certain notes appear and disappear. They'll have a slight pitch bend 20% of the time, just for fun.</p>
+            <em>*This is calculated quick and dirty, by finding an unreliable sort of GCD (greatest common divisor) of a set of floating-point numbers. The fundamental will occasionally be erroneously calculated (&lt 5 Hz) meaning the generated tones may be very close together and dissonant. Sorry :(</em>
+        </div>
+        <script src="random-harmonics.js"></script>
+        <script src="webaudio-playback.js"></script>
+    </body>
+</html>
