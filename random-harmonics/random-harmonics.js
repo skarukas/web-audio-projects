@@ -31,8 +31,9 @@ var setTimeout = setTimeout || function(fn, ms) {
 }
 
 // ====== Max/MSP JS object output =======
-function noteOn(f) {
+function noteOn(f, callback) {
     typeof outlet === 'undefined' || outlet(0, f, 60);
+    callback();
 }
 function noteOff(f) {
     typeof outlet === 'undefined' || outlet(0, f, 0);
@@ -47,7 +48,6 @@ function addFreq() {
     if (freqs.length) {
         var fundamental = gcdReduce(freqs);
         var partialNum = randInt(1, JILimit + 1);
-
         f = clampFreq(fundamental * partialNum * 2**randInt(-4, 4));
         //if (fundamental < 10) post("ERROR!");
     } else {
@@ -57,14 +57,15 @@ function addFreq() {
     // turn the note on for a certain amount of time then cancel it
     freqs.push(f);
     noteOn(f);
-    setTimeout(removeFreq, randRange(noteDuration * 2, noteDuration * 5));
+    setTimeout(function() {removeFreq(f)}, randRange(noteDuration * 2, noteDuration * 5));
+}
 
-    function removeFreq() {
+function removeFreq(f) {
+    noteOff(f, function() { 
         freqs = freqs.filter(function(freq) {
-            return freq != f;
+            return Math.abs(freq - f) < 10;
         });
-        noteOff(f);
-    }
+    });
 }
 
 // I know this function doesn't make any sense. 

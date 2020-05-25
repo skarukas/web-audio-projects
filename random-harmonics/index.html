@@ -14,34 +14,51 @@
             <div class="container">
                 <input title="Volume" type="range" min="0.0" max="1.0" step="0.01" value="0.5" id="volume">
             </div>
-            <p class="center" id="limit-label">JI Limit: 9</p>
+            <p class="center" id="limit-label">JI Limit: 5</p>
             <div class="container">
-                <input title="Limit" type="range" min="2" max="25" step="1" value="9" id="limit">
+                <input title="Limit" type="range" min="2" max="25" step="1" value="5" id="limit">
             </div>
-            <p class="center" id="bend-label">Pitch Bend Probability: 20%</p>
+            <p class="center" id="bend-prob-label">Pitch Bend Probability: 0%</p>
             <div class="container">
-                <input title="Pitch Bend Probability" type="range" min="0" max="100" step="1" value="20" id="bend-slider">
+                <input title="Pitch Bend Probability" type="range" min="0" max="100" step="1" value="0" id="bend-prob-slider">
+            </div>
+            <p class="center" id="bend-amount-label">Max Pitch Bend: 0 Hz</p>
+            <div class="container">
+                <input title="Max Pitch Bend" type="range" min="0" max="128" step="1" value="0" id="bend-amount-slider">
+            </div>
+            <p class="center" id="speed-label">Interval: 1000 ms</p>
+            <div class="container">
+                <input title="Interval" type="range" min="0.0" max="1.0" step="0.01" value="0.8" id="speed-slider">
+            </div>
+            <p class="center" id="min-dur-label">Minimum Length: 2 x Interval</p>
+            <div class="container">
+                <input title="Min Duration" type="range" min="1" max="3" step="1" value="2" id="min-dur-slider">
+            </div>
+            <p class="center" id="max-dur-label">Maximum Length: 5 x Interval</p>
+            <div class="container">
+                <input title="Max Duration" type="range" min="1" max="8" step="1" value="5" id="max-dur-slider">
             </div>
         </div>
         <br/>
         <div class="info">
             <h2 class="center">How It Works</h2>
             <ol>
-                <li>Every second, the fundamental frequency of all currently sounding frequencies is calculated.*</li>
+                <li>Every second, the fundamental frequency of all currently sounding frequencies is calculated.</li>
                 <li>A random harmonic (2 &lt= <em>n</em> &lt= <em>limit</em>) of this fundamental is generated. If there aren't any existing frequencies, a random frequency is generated instead.</li>
                 <li>This new frequency is normalized to the range of 128-2056 Hz.</li>
                 <li>Repeat!</li>
             </ol>
             <p> Each tone generated lasts between 2 and 5 seconds, and the fundamental frequency will slowly evolve as certain notes appear and disappear. They'll have a slight (slow) pitch bend a certain percentage of the time, just for fun.</p>
-            <em>*This is calculated quick and dirty, by finding an unreliable sort of GCD (greatest common divisor) of a set of floating-point numbers. The fundamental will occasionally be erroneously calculated as a low number (&lt 5 Hz) meaning the generated tones may be very close together and dissonant. Sorry :(</em>
             <br/>
             <div class="center" style="padding-top: 10px;">
                 <a href="https://github.com/skarukas" style="text-decoration: none; color:rgb(0, 162, 255)">github/skarukas</a>
             </div>
         </div>
         
-        <!--<script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>-->
+        <!--<script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
         <script src="random-harmonics.js"></script>
-        <script src="webaudio-playback.js"></script>
+        <script src="webaudio-playback.js"></script>-->
+        <script src="audiofile.js"></script>
+        <script src="ambient-ji.js"></script>
     </body>
 </html>

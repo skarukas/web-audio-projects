@@ -76,6 +76,10 @@ noteOn = function(f) {
         osc.start();
 
         // force oscillator to stop after 10 seconds
+        setTimeout(() => {
+            line(oscGain.gain, null, 0, 2);
+            //removeFreq(f);
+        },10000);
         // fade in for 1 sec, random gain, 0.2 <= gain < 1.0
         var gain = 0.8 * Math.random() + 0.2;
         gain = gain * (1.0 - ((f - 128) / 2500)); // linear lowpass "filter";
@@ -91,18 +95,19 @@ noteOn = function(f) {
     }
 }
 
-noteOff = function(f) {
+noteOff = function(f, callback) {
     var index = f.toFixed();
     if (oscList[index]) {
         var [osc, oscGain] = oscList[index];
-        oscGain.gain.setValueAtTime(oscGain.gain.value, audioContext.currentTime);
         // fade out for 1 sec then remove the oscillator
         line(oscGain.gain, null, 0, 2, () => {
             osc.stop();
             delete oscList[index];
+            callback();
         });
         //setTimeout(()=> console.log(oscGain.gain.value), 2000);
     }
+    callback();
 }
 
 /**
